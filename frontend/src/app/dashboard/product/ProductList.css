@@ -1,0 +1,119 @@
+.product-list {
+    padding: 20px; /* Add padding around the product list */
+  }
+  
+  .product-list-container {
+    margin-top: 20px; /* Space between create product section and product list */
+    display: flex;
+    justify-content: center; /* Center the table */
+  }
+  
+  .product-table {
+    width: 100%; /* Full width for the table */
+    border-collapse: collapse; /* Collapse borders */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    border-radius: 2px; /* Rounded corners */
+    overflow: hidden; /* Ensures rounded corners are visible */
+  }
+  
+  .product-table th,
+  .product-table td {
+    padding: 12px 15px; /* Padding inside table cells */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .product-table th {
+    background-color: #f5f5f5; /* Header background color */
+    font-weight: bold; /* Bold text for header */
+    border-bottom: 2px solid #ddd; /* Bottom border for header */
+  }
+  
+  .product-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row color */
+  }
+  
+  .product-table tr:hover {
+    background-color: #f1f1f1; /* Hover effect on rows */
+  }
+  
+  .button-column {
+    display: flex; /* Flex layout for action buttons */
+    gap: 10px; /* Space between buttons */
+  }
+  
+  .product-input {
+    margin: 5px; /* Margin around input fields */
+    padding: 10px; /* Padding inside input fields */
+    border: 1px solid #ccc; /* Border for input fields */
+    border-radius: 4px; /* Rounded corners for input fields */
+  }
+  
+  .create-button,
+  .update-button,
+  .cancel-button,
+  .edit-button,
+  .delete-button {
+    padding: 10px 15px; /* Padding inside buttons */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s ease; /* Transition effect for background */
+  }
+  
+  .create-button {
+    background-color: #28a745; /* Green background for create button */
+    color: white; /* White text */
+  }
+  
+  .create-button:hover {
+    background-color: #218838; /* Darker green on hover */
+  }
+  
+  .update-button {
+    background-color: #007bff; /* Blue background for update button */
+    color: white; /* White text */
+  }
+  
+  .update-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+  }
+  
+  .cancel-button {
+    background-color: #dc3545; /* Red background for cancel button */
+    color: white; /* White text */
+  }
+  
+  .cancel-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+  }
+  
+  .edit-button {
+    background-color: royalblue; /* Yellow background for edit button */
+    color: white; /* White text */
+  }
+  
+  .edit-button:hover {
+    background-color: #e0a800; /* Darker yellow on hover */
+  }
+  
+  .delete-button {
+    background-color: #dc3545; /* Red background for delete button */
+    color: white; /* White text */
+  }
+  
+  .delete-button:hover {
+    background-color: #c82333; /* Darker red on hover */
+  }
+  
+  .create-product {
+    background-color: white; /* Background color for the create container */
+    border: 1px solid #ddd; /* Light gray border */
+    border-radius: 2px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 20px; /* Padding inside the container */
+    margin-bottom: 20px; /* Space below the create container */
+    transition: box-shadow 0.3s ease; /* Smooth shadow transition */
+  }
+  
+
+  

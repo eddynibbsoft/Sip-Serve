@@ -1,0 +1,163 @@
+.purchase-order-list {
+    padding: 20px;
+    background-color: #f9f9f9; /* Light background for the page */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
+  .create-purchase-order {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    background-color: #fff; /* White background for the form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  }
+  
+  .create-purchase-order select,
+  .create-purchase-order input,
+  .create-purchase-order button {
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    border: 1px solid #ccc; /* Light gray border */
+    outline: none;
+  }
+  
+  .create-purchase-order select:focus,
+  .create-purchase-order input:focus,
+  .create-purchase-order button:focus {
+    border-color: #007bff; /* Highlight focus border */
+  }
+  
+  .create-purchase-order button {
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .create-purchase-order button:hover {
+    background-color: #218838;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff; /* White background for the table */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for the table */
+    border-radius: 8px; /* Rounded corners for the table */
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 14px;
+    border: 1px solid #ddd; /* Light border for cells */
+  }
+  
+  th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+    color: #333;
+    text-transform: uppercase;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  tbody tr:hover {
+    background-color: #f1f1f1; /* Slight hover effect for rows */
+    cursor: pointer;
+  }
+  
+  tbody td {
+    vertical-align: middle; /* Vertically align content inside cells */
+  }
+  
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+    color: #fff;
+  }
+  
+  button:focus {
+    outline: none;
+    border: 2px solid #007bff;
+  }
+  
+  button.edit-button {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  button.delete-button {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  button.delete-button:hover {
+    background-color: #c82333;
+  }
+  
+  button.edit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  button.cancel-button {
+    background-color: #ffc107;
+    color: #fff;
+  }
+  
+  button.cancel-button:hover {
+    background-color: #e0a800;
+  }
+  
+  input[type="number"] {
+    width: 120px; /* Set a fixed width for number inputs */
+  }
+  
+  select {
+    width: 200px; /* Set a fixed width for the select dropdown */
+  }
+  
+  input[type="number"],
+  select {
+    font-size: 14px;
+  }
+  
+  /* Add responsiveness */
+  @media screen and (max-width: 768px) {
+    .create-purchase-order {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .create-purchase-order select,
+    .create-purchase-order input,
+    .create-purchase-order button {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  
+    table {
+      font-size: 12px;
+    }
+  
+    th, td {
+      padding: 8px;
+    }
+  }
+  

@@ -1,0 +1,101 @@
+.category-list {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+h1 {
+  color: #343a40;
+  text-align: center;
+}
+
+.create-category {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: #e9ecef;
+}
+
+.input-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.category-input {
+  width: 70%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+}
+
+
+.update-button,
+.edit-button,
+.cancel-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.create-button {
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-button, .cancel-button  {
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+
+
+.create-button:hover,
+.update-button:hover,
+.edit-button:hover,
+.delete-button:hover,
+.cancel-button:hover {
+  background-color: #0056b3;
+}
+
+.category-list-container {
+  margin-top: 20px;
+}
+
+.category-item {
+  padding: 10px;
+  margin: 5px 0;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.category-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-name {
+  font-size: 18px;
+  color: #495057;
+}
+
+.button-column {
+  display: flex;
+  gap: 10px;
+}

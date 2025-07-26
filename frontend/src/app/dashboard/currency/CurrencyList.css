@@ -1,0 +1,93 @@
+/* CurrencyList.css */
+.currency-list {
+    padding: 20px;
+  }
+  
+  .create-currency,
+  .currency-list-container {
+    margin-bottom: 20px;
+    padding: 20px; /* Add some padding for better spacing */
+    background-color: #fff; /* Ensure a white background for contrast */
+    border-radius: 8px; /* Rounded corners for a modern look */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
+  .input-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .currency-input {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  /* Button styles with added margins */
+  .create-button,
+  .update-button,
+  .edit-button,
+  .delete-button,
+  .cancel-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px; /* Add space to the right of each button */
+  }
+  
+  .create-button {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .update-button {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .edit-button {
+    background-color: royalblue;
+    color: white;
+  }
+  
+  .delete-button {
+    background-color: #dc3545;
+    color: white;
+    margin-right: 0; /* Remove right margin for the last button */
+  }
+  
+  .cancel-button {
+    background-color: #6c757d;
+    color: white;
+  }
+  
+  .currency-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .currency-table th,
+  .currency-table td {
+    padding: 12px;
+    border: 1px solid #ccc;
+    text-align: left;
+  }
+  
+  /* Additional shadow for the table */
+  .currency-table th {
+    background-color: #f8f9fa; /* Light background for table header */
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); /* Inset shadow for depth */
+  }
+  
+  .loading,
+  .error {
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f8d7da; /* Light red for error messages */
+    color: #721c24; /* Dark red for error text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  }
+  
