@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'drf_yasg',
     'rest_framework_simplejwt.token_blacklist',
-    'auth',
+    'user_auth',
     'pos',
     'restaurant',
     'drf_spectacular',
