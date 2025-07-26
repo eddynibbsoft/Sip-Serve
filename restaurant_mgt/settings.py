@@ -178,8 +178,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ssdb',      # Replace with your database name
-        'USER': 'root',     # Replace with your MySQL username
-        'PASSWORD': 'zC7CCW99FHiiFQu!PBYyRyGSdN5trRYgY5Zxo!JHPlQGhQt', # Replace with your MySQL password
+        'USER': 'sysadmin',     # Replace with your MySQL username
+        'PASSWORD': '$3RV3Rp@ssw0rd', # Replace with your MySQL password
         'HOST': 'localhost',               # Or the IP address or hostname of your MySQL server
         'PORT': '3306',                    # Or the port MySQL is running on (often 3306)
         'OPTIONS': {
