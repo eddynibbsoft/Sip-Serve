@@ -1,6 +1,6 @@
 from django.db import models
 
-from auth.models import CustomUser
+from user_auth.models import CustomUser
 
 
 # class User(models.Model):

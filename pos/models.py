@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-from canteen.models import MenuItem
+from restaurant.models import MenuItem
 
 class Order(models.Model):
     order_number = models.CharField(max_length=20, unique=True)

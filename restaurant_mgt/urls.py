@@ -22,7 +22,7 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('user_auth.urls')),
-    path('api/canteen/', include('canteen.urls')),
+    path('api/restaurant/', include('restaurant.urls')),
     path('api/pos/', include('pos.urls')),
 
     # JWT token views

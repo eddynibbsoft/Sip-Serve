@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('canteen', '0004_remove_menuitem_unit'),
+        ('restaurant', '0004_remove_menuitem_unit'),
     ]
 
     operations = [
@@ -28,13 +28,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('quantity', models.PositiveIntegerField()),
-                ('menu_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='canteen.menuitem')),
+                ('menu_item', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='restaurant.menuitem')),
                 ('order', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='pos.order')),
             ],
         ),
         migrations.AddField(
             model_name='order',
             name='items',
-            field=models.ManyToManyField(through='pos.OrderItem', to='canteen.menuitem'),
+            field=models.ManyToManyField(through='pos.OrderItem', to='restaurant.menuitem'),
         ),
     ]
