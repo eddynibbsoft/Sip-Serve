@@ -167,7 +167,7 @@ export function SignInForm(): React.JSX.Element {
       <Alert color="warning">
         Powered by{' '}
         <Typography component="span" sx={{ fontWeight: 700 }} variant="inherit">
-          RCU-DevTeam
+          NIBBSOFT
         </Typography>
       </Alert>
     </Stack>

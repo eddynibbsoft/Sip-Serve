@@ -91,7 +91,7 @@ const MenuPage = () => {
   // Fetch all menus
   const fetchMenus = async () => {
     try {
-      const response = await axiosInstance.get('http://127.0.0.1:8000/api/canteen/menus/');
+      const response = await axiosInstance.get('http://127.0.0.1:8000/api/restaurant/menus/');
       setMenus(response.data);
     } catch (error) {
       console.error('Error fetching menus:', error);
@@ -102,7 +102,7 @@ const MenuPage = () => {
   // Fetch all products
   const fetchProducts = async () => {
     try {
-      const response = await axiosInstance.get('http://127.0.0.1:8000/api/canteen/products/');
+      const response = await axiosInstance.get('http://127.0.0.1:8000/api/restaurant/products/');
       setProducts(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -113,7 +113,7 @@ const MenuPage = () => {
   // Fetch menu items for a specific menu
   const fetchMenuItems = async (menuId: number) => {
     try {
-      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/canteen/menus/${menuId}/items/`);
+      const response = await axiosInstance.get(`http://127.0.0.1:8000/api/restaurant/menus/${menuId}/items/`);
       setMenuItems(response.data);
     } catch (error) {
       console.error('Error fetching menu items:', error);
@@ -127,12 +127,12 @@ const MenuPage = () => {
     try {
       if (editMenuId) {
         // Update existing menu
-        await axiosInstance.put(`http://127.0.0.1:8000/api/canteen/menus/${editMenuId}/`, menuData);
+        await axiosInstance.put(`http://127.0.0.1:8000/api/restaurant/menus/${editMenuId}/`, menuData);
         setMenus(menus.map(menu => (menu.menu_id === editMenuId ? { ...menu, ...menuData } : menu)));
         setNotification({ open: true, message: 'Menu updated successfully!', severity: 'success' });
       } else {
         // Create new menu
-        const response = await axiosInstance.post('http://127.0.0.1:8000/api/canteen/menus/', menuData);
+        const response = await axiosInstance.post('http://127.0.0.1:8000/api/restaurant/menus/', menuData);
         setMenus([...menus, response.data]);
         setNotification({ open: true, message: 'Menu created successfully!', severity: 'success' });
       }
@@ -161,12 +161,12 @@ const MenuPage = () => {
 
       if (editMenuItemId) {
         // Update existing menu item
-        await axiosInstance.put(`http://127.0.0.1:8000/api/canteen/menu-items/${editMenuItemId}/`, menuItemDataToSubmit);
+        await axiosInstance.put(`http://127.0.0.1:8000/api/restaurant/menu-items/${editMenuItemId}/`, menuItemDataToSubmit);
         setMenuItems(menuItems.map(item => (item.menu_item_id === editMenuItemId ? { ...item, ...menuItemDataToSubmit } : item)));
         setNotification({ open: true, message: 'Menu Item updated successfully!', severity: 'success' });
       } else {
         // Create new menu item
-        const response = await axiosInstance.post('http://127.0.0.1:8000/api/canteen/menu-items/', menuItemDataToSubmit);
+        const response = await axiosInstance.post('http://127.0.0.1:8000/api/restaurant/menu-items/', menuItemDataToSubmit);
         setMenuItems([...menuItems, response.data]);
         setNotification({ open: true, message: 'Menu Item created successfully!', severity: 'success' });
       }
@@ -187,7 +187,7 @@ const MenuPage = () => {
     if (!menuToDelete) return;
 
     try {
-      await axiosInstance.delete(`http://127.0.0.1:8000/api/canteen/menus/${menuToDelete.menu_id}/`);
+      await axiosInstance.delete(`http://127.0.0.1:8000/api/restaurant/menus/${menuToDelete.menu_id}/`);
       setMenus(menus.filter(menu => menu.menu_id !== menuToDelete.menu_id));
       setNotification({ open: true, message: 'Menu deleted successfully!', severity: 'success' });
       // If the deleted menu was selected, reset selection
@@ -237,7 +237,7 @@ const MenuPage = () => {
   // Function to handle deleting a menu item
 const handleMenuItemDelete = async (menuItemId: number) => {
   try {
-    await axiosInstance.delete(`http://127.0.0.1:8000/api/canteen/menu-items/${menuItemId}/`);
+    await axiosInstance.delete(`http://127.0.0.1:8000/api/restaurant/menu-items/${menuItemId}/`);
     setMenuItems(menuItems.filter(item => item.menu_item_id !== menuItemId));
     setNotification({ open: true, message: 'Menu Item deleted successfully!', severity: 'success' });
   } catch (error) {

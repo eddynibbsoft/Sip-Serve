@@ -18,8 +18,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'password', 'password2', 'first_name', 'last_name', 'role')
 
     def validate_email(self, value):
-        if not value.endswith('@rcu.ac.zw'):
-            raise serializers.ValidationError('Email must be from the rcu.ac.zw domain')
+        if not value.endswith('@gmail.com'):
+            raise serializers.ValidationError('Email must be from the gmail.com domain')
         return value
 
     def validate(self, attrs):

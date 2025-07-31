@@ -101,7 +101,7 @@ export function Layout({ children }: LayoutProps): React.JSX.Element {
           <Stack spacing={1}>
             <Typography sx={{ fontSize: '28px', lineHeight: '32px', textAlign: 'center' }} variant="h1">
               <Box component="span" sx={{ color: '#009ad4' }}>
-                Canteen Management System
+                Bar & Restaurant Management System
               </Box>
             </Typography>
             <Typography color="white" align="center" variant="subtitle1">

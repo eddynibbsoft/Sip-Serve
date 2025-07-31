@@ -31,7 +31,7 @@ const InventoryTransactionList = () => {
   const refreshToken = localStorage.getItem("refresh_token");
 
   const axiosInstance = axios.create({
-    baseURL: "http://127.0.0.1:8000/api/canteen/",
+    baseURL: "http://127.0.0.1:8000/api/restaurant/",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
