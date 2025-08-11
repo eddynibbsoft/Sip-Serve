@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
 import { Button } from "@/components/ui/button"
@@ -10,13 +8,16 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import Link from "next/link"
+import { useRouter } from "next/navigation" // ✅ App Router (v13+)
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
+
   const { login } = useAuth()
   const { toast } = useToast()
+  const router = useRouter() // ✅ Get router
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -24,10 +25,14 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
+
       toast({
         title: "Success",
         description: "Logged in successfully!",
       })
+
+      // ✅ Redirect to dashboard
+      router.push("/dashboard")
     } catch (error) {
       toast({
         title: "Error",

@@ -1,10 +1,9 @@
 "use client"
 
 import type React from "react"
-
 import { useAuth } from "@/contexts/auth-context"
 import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -12,24 +11,24 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
-  const { user, loading } = useAuth()
+  const { user, token, loading } = useAuth()
   const router = useRouter()
+  const hasRedirected = useRef(false)
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push("/login")
-        return
-      }
+    if (loading || hasRedirected.current) return
 
-      if (allowedRoles && !allowedRoles.includes(user.role)) {
-        router.push("/dashboard")
-        return
-      }
+    if (!user && !token) {
+      hasRedirected.current = true
+      router.push("/login")
+    } else if (user && allowedRoles && !allowedRoles.includes(user.role)) {
+      hasRedirected.current = true
+      router.push("/dashboard") // fallback route
     }
-  }, [user, loading, router, allowedRoles])
+  }, [user, token, loading, router, allowedRoles])
 
-  if (loading) {
+  // Show loading indicator while auth state is being determined
+  if (loading || (token && !user)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -38,12 +37,12 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (!user) {
+    // This should ideally not be reached if the useEffect redirect works correctly,
+    // but as a fallback, we prevent rendering children.
     return null
   }
-
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return null
-  }
+  
+  if (allowedRoles && !allowedRoles.includes(user.role)) return null
 
   return <>{children}</>
 }
