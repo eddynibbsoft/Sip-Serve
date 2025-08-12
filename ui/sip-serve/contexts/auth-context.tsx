@@ -1,32 +1,21 @@
 "use client"
 
 import type React from "react"
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { api } from "@/lib/api"
 
 interface User {
   id: number
   email: string
   first_name: string
   last_name: string
-  role: "cashier" | "manager" | "admin"
-  is_verified: boolean
-}
-
-interface RegisterData {
-  email: string
-  password: string
-  first_name: string
-  last_name: string
-  role: "cashier" | "manager" | "admin"
+  role: string
 }
 
 interface AuthContextType {
   user: User | null
-  token: string | null
   login: (email: string, password: string) => Promise<void>
-  register: (userData: RegisterData) => Promise<void>
+  register: (userData: any) => Promise<void>
   logout: () => void
   loading: boolean
 }
@@ -35,86 +24,106 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [token, setToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  const clearStorage = useCallback(() => {
-    localStorage.removeItem("token")
-    localStorage.removeItem("refresh")
-    localStorage.removeItem("user")
+  useEffect(() => {
+    // Check for existing session on mount
+    const checkAuth = () => {
+      try {
+        const token = localStorage.getItem("token")
+        const userData = localStorage.getItem("user")
+
+        if (token && userData) {
+          const parsedUser = JSON.parse(userData)
+          setUser(parsedUser)
+        }
+      } catch (error) {
+        console.error("Failed to parse user data:", error)
+        localStorage.removeItem("token")
+        localStorage.removeItem("user")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkAuth()
   }, [])
 
-  const logout = useCallback(() => {
-    setUser(null)
-    setToken(null)
-    api.clearTokens()
-    clearStorage()
-    router.push("/login")
-  }, [router, clearStorage])
-
-  useEffect(() => {
-    api.setOnUnauthorized(() => logout())
-  }, [logout])
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token")
-    if (storedToken) {
-      api.setToken(storedToken)
-      setToken(storedToken)
-      api
-        .getUser()
-        .then((userData) => {
-          setUser(userData)
-          localStorage.setItem("user", JSON.stringify(userData))
-        })
-        .catch(() => {
-          // Invalid token, clear session
-          logout()
-        })
-        .finally(() => {
-          setLoading(false)
-        })
-    } else {
-      setLoading(false)
-    }
-  }, [logout])
-
   const login = async (email: string, password: string) => {
-    const data = await api.login(email, password)
-    api.setToken(data.access)
-    api.setRefreshToken(data.refresh)
-    setToken(data.access)
-    localStorage.setItem("token", data.access)
-    localStorage.setItem("refresh", data.refresh)
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const userData = await api.getUser()
-    setUser(userData)
-    localStorage.setItem("user", JSON.stringify(userData))
+      // Mock authentication - replace with real API call
+      const mockUser = {
+        id: 1,
+        email: email,
+        first_name: "Edmore",
+        last_name: "Munemo",
+        role: "admin",
+      }
+
+      const mockToken = "mock-jwt-token-" + Date.now()
+
+      localStorage.setItem("token", mockToken)
+      localStorage.setItem("user", JSON.stringify(mockUser))
+      setUser(mockUser)
+
+      router.push("/dashboard")
+    } catch (error) {
+      throw new Error("Invalid credentials")
+    }
   }
 
-  const register = async (userData: RegisterData) => {
-    const data = await api.register(userData)
-    api.setToken(data.access)
-    api.setRefreshToken(data.refresh)
-    setToken(data.access)
-    localStorage.setItem("token", data.access)
-    localStorage.setItem("refresh", data.refresh)
+  const register = async (userData: any) => {
+    try {
+      // Simulate API call delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
 
-    const newUser = await api.getUser()
-    setUser(newUser)
-    localStorage.setItem("user", JSON.stringify(newUser))
+      // Mock registration - replace with real API call
+      const newUser = {
+        id: Date.now(),
+        email: userData.email,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        role: userData.role || "cashier",
+      }
+
+      const mockToken = "mock-jwt-token-" + Date.now()
+
+      localStorage.setItem("token", mockToken)
+      localStorage.setItem("user", JSON.stringify(newUser))
+      setUser(newUser)
+
+      router.push("/dashboard")
+    } catch (error) {
+      throw new Error("Registration failed")
+    }
   }
 
-  return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
-  )
+  const logout = () => {
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    setUser(null)
+    router.push("/login")
+  }
+
+  const value = {
+    user,
+    login,
+    register,
+    logout,
+    loading,
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {
   const context = useContext(AuthContext)
-  if (!context) throw new Error("useAuth must be used within an AuthProvider")
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
   return context
 }

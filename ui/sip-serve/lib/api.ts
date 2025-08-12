@@ -1,155 +1,105 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api"
 
-class ApiService {
+class ApiClient {
   private baseURL: string
-  private token: string | null = null
-  private refreshToken: string | null = null
-  private onUnauthorized?: () => void // callback to log out if refresh fails
 
   constructor(baseURL: string) {
     this.baseURL = baseURL
-    if (typeof window !== "undefined") {
-      const storedToken = localStorage.getItem("token")
-      const storedRefresh = localStorage.getItem("refresh")
-      if (storedToken) this.setToken(storedToken)
-      if (storedRefresh) this.setRefreshToken(storedRefresh)
-    }
   }
 
-  setToken(token: string | null) {
-    this.token = token
-    if (typeof window !== "undefined" && token) {
-      localStorage.setItem("token", token)
-    }
-  }
-
-  setRefreshToken(refreshToken: string | null) {
-    this.refreshToken = refreshToken
-    if (typeof window !== "undefined" && refreshToken) {
-      localStorage.setItem("refresh", refreshToken)
-    }
-  }
-
-  setOnUnauthorized(callback: () => void) {
-    this.onUnauthorized = callback
-  }
-
-  private async refreshAccessToken() {
-    if (!this.refreshToken) throw new Error("No refresh token available")
-
-    const res = await fetch(`${this.baseURL}/token/refresh/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh: this.refreshToken }),
-    })
-
-    if (!res.ok) {
-      throw new Error("Refresh token expired")
-    }
-
-    const data = await res.json()
-    this.setToken(data.access) // update access token
-    return data.access
-  }
-
-  private async request<T>(endpoint: string, options: RequestInit = {}, retry = true): Promise<T> {
+  private async request(endpoint: string, options: RequestInit = {}) {
     const url = `${this.baseURL}${endpoint}`
-    const headers: HeadersInit = {
-      "Content-Type": "application/json",
-      ...options.headers,
-    }
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`
-    }
+    const token = localStorage.getItem("token")
 
-    const response = await fetch(url, { ...options, headers })
-
-    // Auto-refresh if unauthorized
-    if (response.status === 401 && retry && this.refreshToken) {
-      try {
-        const newAccess = await this.refreshAccessToken()
-        return this.request<T>(endpoint, options, false) // retry once
-      } catch (error) {
-        this.clearTokens()
-        if (this.onUnauthorized) this.onUnauthorized()
-        throw error
-      }
+    const config: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+      },
+      ...options,
     }
 
-    let data: any
     try {
-      data = await response.json()
-    } catch {
-      data = {}
-    }
+      const response = await fetch(url, config)
 
-    if (!response.ok) {
-      throw new Error(data.message || `HTTP error! status: ${response.status}`)
-    }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
 
-    return data as T
-  }
-
-  clearTokens() {
-    this.token = null
-    this.refreshToken = null
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token")
-      localStorage.removeItem("refresh")
+      return response.json()
+    } catch (error) {
+      console.error("API request failed:", error)
+      throw error
     }
   }
 
-  // ---------- AUTH ----------
-  login(email: string, password: string) {
-    return this.request<{ access: string; refresh: string; user: any }>("/token/", {
+  async get(endpoint: string) {
+    return this.request(endpoint, { method: "GET" })
+  }
+
+  async post(endpoint: string, data: any) {
+    return this.request(endpoint, {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(data),
     })
   }
 
-  register(userData: Record<string, unknown>) {
-    return this.request<{ access: string; refresh: string; user: any }>("/auth/signup/", {
-      method: "POST",
-      body: JSON.stringify(userData),
+  async put(endpoint: string, data: any) {
+    return this.request(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(data),
     })
   }
 
-  getUser() {
-    return this.request<any>("/auth/user/")
+  async delete(endpoint: string) {
+    return this.request(endpoint, { method: "DELETE" })
   }
 
-  // ---------- RESTAURANT ----------
-  getProducts() {
-    return this.request<any[]>("/restaurant/products/")
+  // Specific API methods
+  async getProducts() {
+    return this.get("/restaurant/products/")
   }
 
-  getCategories() {
-    return this.request<any[]>("/restaurant/categories/")
+  async createProduct(data: any) {
+    return this.post("/restaurant/products/", data)
   }
 
-  getCustomers() {
-    return this.request<any[]>("/restaurant/customers/")
+  async updateProduct(id: number, data: any) {
+    return this.put(`/restaurant/products/${id}/`, data)
   }
 
-  getMenuItems() {
-    return this.request<any[]>("/restaurant/menu-items/")
+  async deleteProduct(id: number) {
+    return this.delete(`/restaurant/products/${id}/`)
   }
 
-  getSales() {
-    return this.request<any[]>("/restaurant/sales/")
+  async getCategories() {
+    return this.get("/restaurant/categories/")
   }
 
-  // ---------- POS ----------
-  createOrder(orderData: Record<string, unknown>) {
-    return this.request("/pos/orders/", {
-      method: "POST",
-      body: JSON.stringify(orderData),
-    })
+  async getCustomers() {
+    return this.get("/restaurant/customers/")
   }
 
-  getOrders() {
-    return this.request<any[]>("/pos/orders/")
+  async createCustomer(data: any) {
+    return this.post("/restaurant/customers/", data)
+  }
+
+  async updateCustomer(id: number, data: any) {
+    return this.put(`/restaurant/customers/${id}/`, data)
+  }
+
+  async deleteCustomer(id: number) {
+    return this.delete(`/restaurant/customers/${id}/`)
+  }
+
+  async createOrder(data: any) {
+    return this.post("/pos/sales/", data)
+  }
+
+  async getSales() {
+    return this.get("/pos/sales/")
   }
 }
 
-export const api = new ApiService(API_BASE_URL)
+export const api = new ApiClient(API_BASE_URL)

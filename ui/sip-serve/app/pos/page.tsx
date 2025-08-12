@@ -1,270 +1,281 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useToast } from "@/hooks/use-toast"
-import { api } from "@/lib/api"
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react"
+import { Search, Plus, Minus, ShoppingCart, User, CreditCard, Trash2 } from "lucide-react"
 
-interface MenuItem {
+interface Product {
   id: number
   name: string
-  price: string
-  quantity: number
+  price: number
   category: string
+  stock: number
+  image?: string
 }
 
-interface CartItem extends MenuItem {
-  cartQuantity: number
+interface CartItem extends Product {
+  quantity: number
 }
 
 interface Customer {
   id: number
   name: string
   email: string
+  phone: string
 }
 
+const products: Product[] = [
+  { id: 1, name: "Espresso", price: 3.5, category: "Coffee", stock: 50 },
+  { id: 2, name: "Cappuccino", price: 4.25, category: "Coffee", stock: 45 },
+  { id: 3, name: "Latte", price: 4.75, category: "Coffee", stock: 40 },
+  { id: 4, name: "Americano", price: 3.25, category: "Coffee", stock: 55 },
+  { id: 5, name: "Croissant", price: 2.5, category: "Pastry", stock: 20 },
+  { id: 6, name: "Muffin", price: 3.0, category: "Pastry", stock: 15 },
+  { id: 7, name: "Sandwich", price: 6.5, category: "Food", stock: 25 },
+  { id: 8, name: "Salad", price: 8.75, category: "Food", stock: 18 },
+]
+
+const customers: Customer[] = [
+  { id: 1, name: "Walk-in Customer", email: "", phone: "" },
+  { id: 2, name: "John Doe", email: "john@example.com", phone: "+1234567890" },
+  { id: 3, name: "Jane Smith", email: "jane@example.com", phone: "+1234567891" },
+  { id: 4, name: "Mike Johnson", email: "mike@example.com", phone: "+1234567892" },
+]
+
 export default function POSPage() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([])
-  const [customers, setCustomers] = useState<Customer[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
-  const [selectedCustomer, setSelectedCustomer] = useState<string>("")
-  const [loading, setLoading] = useState(true)
-  const [processing, setProcessing] = useState(false)
-  const { toast } = useToast()
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer>(customers[0])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [paymentMethod, setPaymentMethod] = useState("cash")
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  const categories = ["All", "Coffee", "Pastry", "Food"]
 
-  const fetchData = async () => {
-    try {
-      const [menuResponse, customersResponse] = await Promise.all([api.getMenuItems(), api.getCustomers()])
-      setMenuItems(menuResponse)
-      setCustomers(customersResponse)
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load data",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory
+    return matchesSearch && matchesCategory
+  })
 
-  const addToCart = (item: MenuItem) => {
-    if (item.quantity <= 0) {
-      toast({
-        title: "Out of Stock",
-        description: `${item.name} is currently out of stock`,
-        variant: "destructive",
-      })
-      return
-    }
-
-    setCart((prev) => {
-      const existingItem = prev.find((cartItem) => cartItem.id === item.id)
-      if (existingItem) {
-        if (existingItem.cartQuantity >= item.quantity) {
-          toast({
-            title: "Stock Limit",
-            description: `Only ${item.quantity} ${item.name} available`,
-            variant: "destructive",
-          })
-          return prev
-        }
-        return prev.map((cartItem) =>
-          cartItem.id === item.id ? { ...cartItem, cartQuantity: cartItem.cartQuantity + 1 } : cartItem,
-        )
+  const addToCart = (product: Product) => {
+    const existingItem = cart.find((item) => item.id === product.id)
+    if (existingItem) {
+      if (existingItem.quantity < product.stock) {
+        setCart(cart.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)))
       }
-      return [...prev, { ...item, cartQuantity: 1 }]
-    })
+    } else {
+      setCart([...cart, { ...product, quantity: 1 }])
+    }
   }
 
-  const updateCartQuantity = (id: number, change: number) => {
-    setCart((prev) => {
-      return prev
-        .map((item) => {
-          if (item.id === id) {
-            const newQuantity = item.cartQuantity + change
-            if (newQuantity <= 0) {
-              return null
-            }
-            if (newQuantity > item.quantity) {
-              toast({
-                title: "Stock Limit",
-                description: `Only ${item.quantity} ${item.name} available`,
-                variant: "destructive",
-              })
-              return item
-            }
-            return { ...item, cartQuantity: newQuantity }
-          }
-          return item
-        })
-        .filter(Boolean) as CartItem[]
-    })
+  const updateQuantity = (id: number, quantity: number) => {
+    if (quantity === 0) {
+      setCart(cart.filter((item) => item.id !== id))
+    } else {
+      const product = products.find((p) => p.id === id)
+      if (product && quantity <= product.stock) {
+        setCart(cart.map((item) => (item.id === id ? { ...item, quantity } : item)))
+      }
+    }
   }
 
   const removeFromCart = (id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id))
+    setCart(cart.filter((item) => item.id !== id))
   }
 
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + Number.parseFloat(item.price) * item.cartQuantity, 0)
-  }
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const tax = subtotal * 0.08 // 8% tax
+  const total = subtotal + tax
 
-  const processOrder = async () => {
-    if (cart.length === 0) {
-      toast({
-        title: "Empty Cart",
-        description: "Please add items to cart before processing order",
-        variant: "destructive",
-      })
-      return
-    }
+  const handleCheckout = () => {
+    if (cart.length === 0) return
 
-    setProcessing(true)
-    try {
-      const orderData = {
-        customer: selectedCustomer ? Number.parseInt(selectedCustomer) : null,
-        items: cart.map((item) => ({
-          menu_item: item.id,
-          quantity: item.cartQuantity,
-          price: item.price,
-        })),
-        total_amount: calculateTotal(),
-      }
-
-      await api.createOrder(orderData)
-
-      toast({
-        title: "Success",
-        description: "Order processed successfully!",
-      })
-
-      setCart([])
-      setSelectedCustomer("")
-      fetchData() // Refresh menu items to update stock
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to process order",
-        variant: "destructive",
-      })
-    } finally {
-      setProcessing(false)
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    )
+    // Here you would typically send the order to your backend
+    alert(`Order placed successfully!\nTotal: $${total.toFixed(2)}\nPayment: ${paymentMethod}`)
+    setCart([])
+    setSelectedCustomer(customers[0])
   }
 
   return (
-    <div className="flex h-full">
-      {/* Menu Items */}
+    <div className="flex h-full bg-gray-50">
+      {/* Products Section */}
       <div className="flex-1 p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Point of Sale</h1>
-          <p className="text-muted-foreground">Select items to add to cart</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Point of Sale</h1>
+
+          {/* Search and Filter */}
+          <div className="flex gap-4 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search products..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {menuItems.map((item) => (
-            <Card key={item.id} className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg">{item.name}</CardTitle>
-                <CardDescription className="flex items-center justify-between">
-                  <span>${Number.parseFloat(item.price).toFixed(2)}</span>
-                  <Badge variant={item.quantity > 0 ? "secondary" : "destructive"}>Stock: {item.quantity}</Badge>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button onClick={() => addToCart(item)} disabled={item.quantity <= 0} className="w-full">
-                  Add to Cart
-                </Button>
+        {/* Products Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {filteredProducts.map((product) => (
+            <Card
+              key={product.id}
+              className="cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => addToCart(product)}
+            >
+              <CardContent className="p-4">
+                <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                  <span className="text-2xl">☕</span>
+                </div>
+                <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+                <p className="text-sm text-gray-600 mb-2">{product.category}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold text-green-600">${product.price.toFixed(2)}</span>
+                  <Badge variant={product.stock > 10 ? "default" : "destructive"}>{product.stock} left</Badge>
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       </div>
 
-      {/* Cart */}
-      <div className="w-96 border-l bg-card p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <ShoppingCart className="h-6 w-6" />
-          <h2 className="text-2xl font-bold">Cart</h2>
+      {/* Cart Section */}
+      <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <ShoppingCart className="h-5 w-5" />
+            Current Order
+          </h2>
+
+          {/* Customer Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Customer</label>
+            <Select
+              value={selectedCustomer.id.toString()}
+              onValueChange={(value) => {
+                const customer = customers.find((c) => c.id === Number.parseInt(value))
+                if (customer) setSelectedCustomer(customer)
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {customers.map((customer) => (
+                  <SelectItem key={customer.id} value={customer.id.toString()}>
+                    <div className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      {customer.name}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
-        <div className="mb-4">
-          <Select value={selectedCustomer} onValueChange={setSelectedCustomer}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select customer (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              {customers.map((customer) => (
-                <SelectItem key={customer.id} value={customer.id.toString()}>
-                  {customer.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-4 mb-6 max-h-96 overflow-auto">
+        {/* Cart Items */}
+        <div className="flex-1 overflow-y-auto p-6">
           {cart.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">Cart is empty</p>
+            <div className="text-center text-gray-500 mt-8">
+              <ShoppingCart className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>No items in cart</p>
+              <p className="text-sm">Add products to get started</p>
+            </div>
           ) : (
-            cart.map((item) => (
-              <Card key={item.id}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-medium">{item.name}</h4>
-                    <Button variant="ghost" size="sm" onClick={() => removeFromCart(item.id)}>
-                      <Trash2 className="h-4 w-4" />
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900">{item.name}</h4>
+                    <p className="text-sm text-gray-600">${item.price.toFixed(2)} each</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <span className="w-8 text-center font-medium">{item.quantity}</span>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                      disabled={item.quantity >= item.stock}
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeFromCart(item.id)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
-                      ${Number.parseFloat(item.price).toFixed(2)} each
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <Button variant="outline" size="sm" onClick={() => updateCartQuantity(item.id, -1)}>
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="w-8 text-center">{item.cartQuantity}</span>
-                      <Button variant="outline" size="sm" onClick={() => updateCartQuantity(item.id, 1)}>
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="text-right mt-2 font-medium">
-                    ${(Number.parseFloat(item.price) * item.cartQuantity).toFixed(2)}
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+                </div>
+              ))}
+            </div>
           )}
         </div>
 
-        <div className="border-t pt-4">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-lg font-bold">Total:</span>
-            <span className="text-2xl font-bold">${calculateTotal().toFixed(2)}</span>
+        {/* Checkout Section */}
+        {cart.length > 0 && (
+          <div className="p-6 border-t border-gray-200 bg-gray-50">
+            <div className="space-y-3 mb-4">
+              <div className="flex justify-between text-sm">
+                <span>Subtotal:</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Tax (8%):</span>
+                <span>${tax.toFixed(2)}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between font-bold text-lg">
+                <span>Total:</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+              <Select value={paymentMethod} onValueChange={setPaymentMethod}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="card">Credit Card</SelectItem>
+                  <SelectItem value="mobile">Mobile Payment</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button onClick={handleCheckout} className="w-full h-12 text-lg font-semibold" disabled={cart.length === 0}>
+              <CreditCard className="h-5 w-5 mr-2" />
+              Complete Order
+            </Button>
           </div>
-          <Button onClick={processOrder} disabled={cart.length === 0 || processing} className="w-full" size="lg">
-            {processing ? "Processing..." : "Process Order"}
-          </Button>
-        </div>
+        )}
       </div>
     </div>
   )

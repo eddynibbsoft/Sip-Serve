@@ -9,8 +9,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Sip & Serve POS",
-  description: "Restaurant Point of Sale System",
-    generator: 'v0.dev'
+  description: "Modern Point of Sale System for Restaurants",
 }
 
 export default function RootLayout({

@@ -1,4 +1,7 @@
+"use client"
+
 import type React from "react"
+
 import { Sidebar } from "@/components/layout/sidebar"
 import { ProtectedRoute } from "@/components/layout/protected-route"
 
@@ -9,9 +12,9 @@ export default function DashboardLayout({
 }) {
   return (
     <ProtectedRoute>
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-gray-50">
         <Sidebar />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </ProtectedRoute>
   )
